@@ -1,0 +1,16 @@
+name: Trigger Pages Build from main/dev
+
+on:
+  push:
+    branches: [main, dev]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: build_pages
+

@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import './App.css'
-import { combineAsJsonObjects, defaultSampleInput, type InputLists } from './utils/combinations'
+import { defaultSampleInput, type InputLists } from './utils/combinations'
+import * as mainLib from './lib/main.js'
+import * as devLib from './lib/dev.js'
 
 function App() {
   const [rawJson, setRawJson] = useState<string>(JSON.stringify(defaultSampleInput, null, 2))
@@ -22,9 +24,18 @@ function App() {
     if (!parsed) return []
     try {
       setError(null)
-      return combineAsJsonObjects(parsed)
+      return mainLib.combineAsJsonObjects(parsed)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Unknown error')
+      return []
+    }
+  }, [parsed])
+
+  const outputDev = useMemo(() => {
+    if (!parsed) return []
+    try {
+      return devLib.combineAsJsonObjects(parsed)
+    } catch {
       return []
     }
   }, [parsed])
@@ -55,11 +66,16 @@ function App() {
           {error && <div style={{ color: 'crimson', marginTop: 8 }}>Error: {error}</div>}
         </div>
         <div>
-          <label style={{ fontWeight: 600 }}>Output JSON (cartesian combinations)</label>
+          <label style={{ fontWeight: 600 }}>Output (main)</label>
           <pre style={{ width: '100%', height: 300, overflow: 'auto', background: '#111', color: '#eee', padding: 12, borderRadius: 8 }}>
             {JSON.stringify(output, null, 2)}
           </pre>
-          <div style={{ marginTop: 8, color: '#888' }}>Total combinations: {output.length}</div>
+          <div style={{ marginTop: 8, color: '#888' }}>Total (main): {output.length}</div>
+          <label style={{ fontWeight: 600, marginTop: 16, display: 'block' }}>Output (dev)</label>
+          <pre style={{ width: '100%', height: 300, overflow: 'auto', background: '#111', color: '#eee', padding: 12, borderRadius: 8 }}>
+            {JSON.stringify(outputDev, null, 2)}
+          </pre>
+          <div style={{ marginTop: 8, color: '#888' }}>Total (dev): {outputDev.length}</div>
         </div>
       </section>
     </div>

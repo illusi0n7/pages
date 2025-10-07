@@ -1,10 +1,10 @@
-name: Deploy GitHub Pages
+name: Deploy GitHub Pages (page)
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    branches: [page]
+  repository_dispatch:
+    types: [build_pages]
 
 permissions:
   contents: read
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: page
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -29,7 +31,10 @@ jobs:
       - name: Install
         run: npm ci
       - name: Build
-        run: npm run build
+        run: |
+          curl -sSL -o src/lib/main.js https://raw.githubusercontent.com/${{ github.repository }}/main/lib/combinations.js
+          curl -sSL -o src/lib/dev.js https://raw.githubusercontent.com/${{ github.repository }}/dev/lib/combinations.js
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -33,7 +33,10 @@ function App() {
     <div style={{ display: 'grid', gap: '1rem', textAlign: 'left' }}>
       <header style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
         <h1 style={{ margin: 0 }}>Combinations Tester</h1>
-        <span style={{ color: '#888' }}>main branch</span>
+        <span style={{ color: '#888' }}>{(() => {
+          // small helper to show which branch the build artifact represents
+          return 'dev branch'
+        })()}</span>
       </header>
 
       <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

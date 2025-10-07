@@ -24,7 +24,13 @@ function App() {
     if (!parsed) return []
     try {
       setError(null)
-      return mainLib.combineAsJsonObjects(parsed)
+      const fn = (mainLib as unknown as Record<string, unknown>).combineAsJsonObjects
+        || (mainLib as unknown as Record<string, unknown>).combineAll
+        || (mainLib as unknown as Record<string, unknown>).default
+      if (typeof fn === 'function') {
+        return (fn as (lists: InputLists) => Record<string, unknown>[])(parsed)
+      }
+      throw new Error('No compatible export found in main lib')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Unknown error')
       return []
@@ -34,7 +40,13 @@ function App() {
   const outputDev = useMemo(() => {
     if (!parsed) return []
     try {
-      return devLib.combineAsJsonObjects(parsed)
+      const fn = (devLib as unknown as Record<string, unknown>).combineAsJsonObjects
+        || (devLib as unknown as Record<string, unknown>).combineAll
+        || (devLib as unknown as Record<string, unknown>).default
+      if (typeof fn === 'function') {
+        return (fn as (lists: InputLists) => Record<string, unknown>[])(parsed)
+      }
+      return []
     } catch {
       return []
     }
